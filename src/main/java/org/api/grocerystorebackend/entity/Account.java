@@ -16,7 +16,7 @@ public class Account {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="user_id",nullable = false)
     private User user;
 
@@ -28,9 +28,6 @@ public class Account {
 
     @Column(name = "password", nullable = false, columnDefinition = "varchar(255)")
     private String password;
-
-    @Column(name = "reset_password_token", columnDefinition = "varchar(255)")
-    private String resetPasswordToken;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
