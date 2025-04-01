@@ -3,7 +3,7 @@ package org.api.grocerystorebackend.controller;
 import org.api.grocerystorebackend.dto.request.OtpRequest;
 import org.api.grocerystorebackend.dto.request.OtpVerifyRequest;
 import org.api.grocerystorebackend.dto.response.ApiResponse;
-import org.api.grocerystorebackend.repository.AccountRepository;
+import org.api.grocerystorebackend.service.IAccountService;
 import org.api.grocerystorebackend.service.IOtpService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,7 +21,7 @@ public class OtpController {
     private IOtpService otpService;
 
     @Autowired
-    private AccountRepository accountRepository;
+    private IAccountService accountService;
 
     // Send Otp
     @PostMapping("/send")
@@ -30,7 +30,8 @@ public class OtpController {
         try{
             String email= request.getEmail();
             boolean forRegistration = request.isForRegistration();
-            boolean emailExists= accountRepository.findByEmail(email).isPresent();
+            // Check Email Exist
+            boolean emailExists= accountService.emailExists(email);
             // Exception for Case Send otp to register
             if (forRegistration && emailExists) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)

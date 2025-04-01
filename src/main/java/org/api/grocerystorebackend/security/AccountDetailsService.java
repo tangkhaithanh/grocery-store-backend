@@ -1,6 +1,4 @@
 package org.api.grocerystorebackend.security;
-
-import jakarta.annotation.PostConstruct;
 import org.api.grocerystorebackend.entity.Account;
 import org.api.grocerystorebackend.repository.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;

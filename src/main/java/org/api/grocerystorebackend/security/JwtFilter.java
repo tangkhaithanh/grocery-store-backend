@@ -1,9 +1,6 @@
 package org.api.grocerystorebackend.security;
-
-import jakarta.persistence.Column;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
-import org.api.grocerystorebackend.repository.AccountRepository;
 import org.api.grocerystorebackend.utils.JwtProperties;
 import org.api.grocerystorebackend.utils.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;

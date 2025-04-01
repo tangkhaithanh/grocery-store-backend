@@ -5,17 +5,13 @@ import org.api.grocerystorebackend.dto.request.ForgotPasswordRequest;
 import org.api.grocerystorebackend.dto.request.RegisterRequest;
 import org.api.grocerystorebackend.dto.response.ApiResponse;
 import org.api.grocerystorebackend.dto.response.AuthResponse;
-import org.api.grocerystorebackend.entity.Account;
-import org.api.grocerystorebackend.entity.User;
-import org.api.grocerystorebackend.repository.AccountRepository;
-import org.api.grocerystorebackend.repository.UserRepository;
+import org.api.grocerystorebackend.service.IAccountService;
 import org.api.grocerystorebackend.utils.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,13 +29,7 @@ public class AuthController {
     private JwtUtil jwtUtil;
 
     @Autowired
-    private AccountRepository accountRepository;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    @Autowired
-    private UserRepository userRepository;
+    private IAccountService accountService;
 
     // API Login
     @PostMapping("/login")
@@ -61,40 +51,16 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<?>> register(@RequestBody RegisterRequest request) {
         try {
-            // Checked If email Exist
-            if (accountRepository.findByEmail(request.getEmail()).isPresent()) {
+            boolean success = accountService.registerUser(request);
+
+            if (!success)
+            {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                         .body(ApiResponse.fail("Email đã được sử dụng"));
             }
-            // Create User:
-            User user = new User();
-            user.setFullName(request.getFullName());
-            user.setPhone(request.getPhone());
-            user.setGender(request.getGender());
-            user.setCreatedAt(LocalDateTime.now());
-            user.setUpdatedAt(LocalDateTime.now());
-            user.setImageUrl("https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png");
-            // Save user before to have an user_id
-            user = userRepository.save(user);
-
-            // Create account and attach user:
-            Account account = new Account();
-            account.setEmail(request.getEmail());
-            account.setPassword(passwordEncoder.encode(request.getPassword()));
-            account.setIsActive(true);
-            account.setUser(user);
-            account.setCreatedAt(LocalDateTime.now());
-            account.setUpdatedAt(LocalDateTime.now());
-
-
-            user.setAccount(account);
-
-            // Lưu account
-            accountRepository.save(account);
-
             return ResponseEntity.ok(ApiResponse.ok("Đăng ký thành công", null));
         } catch (Exception e) {
-            e.printStackTrace(); // 👈 debug log nếu cần
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(ApiResponse.fail("Đã xảy ra lỗi khi đăng ký"));
         }
@@ -103,18 +69,18 @@ public class AuthController {
     // API Forgot Password:
     @PostMapping("/forgot-password")
     public ResponseEntity<ApiResponse<?>> forgotPassword(@RequestBody ForgotPasswordRequest request) {
-        String email = request.getEmail();
-        String newPassword = request.getNewPassword();
-        Account account = accountRepository.findByEmail(email).orElse(null);
-        if (account == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(ApiResponse.fail("Không tìm thấy tài khoản"));
+        try {
+            boolean result = accountService.resetPassword(request);
+            if (!result)
+            {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(ApiResponse.fail("Không tìm thấy tài khoản"));
+            }
+            return ResponseEntity.ok(ApiResponse.ok("Đặt lại mật khẩu thành công", null));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ApiResponse.fail("Đã xảy ra lỗi khi đặt lại mật khẩu"));
         }
-
-        account.setPassword(passwordEncoder.encode(newPassword));
-        account.setUpdatedAt(LocalDateTime.now());
-        accountRepository.save(account);
-
-        return ResponseEntity.ok(ApiResponse.ok("Đặt lại mật khẩu thành công", null));
     }
 }
