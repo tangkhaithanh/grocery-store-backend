@@ -1,5 +1,7 @@
 package org.api.grocerystorebackend.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -21,17 +23,16 @@ public class Order {
 
     @ManyToOne
     @JoinColumn(name="user_id", nullable = false)
+    @JsonBackReference
     private User user;
 
     @ManyToOne
-    @JoinColumn(name="product_id", nullable = false)
-    private Product product;
-
-    @ManyToOne
     @JoinColumn(name="voucher_id", nullable = false)
+    @JsonBackReference
     private Voucher voucher;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<OrderItem> orderItems;
 
     @Column(name = "status", columnDefinition = "varchar(50)")
