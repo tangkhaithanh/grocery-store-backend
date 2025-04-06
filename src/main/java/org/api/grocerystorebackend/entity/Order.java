@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.api.grocerystorebackend.enums.StatusOrderType;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -35,8 +36,10 @@ public class Order {
     @JsonManagedReference
     private List<OrderItem> orderItems;
 
+    @Enumerated(EnumType.STRING) // Lưu enum dưới dạng String trong DB
     @Column(name = "status", columnDefinition = "varchar(50)")
-    private String status;
+    private StatusOrderType status;
+
 
     @Column(name = "total_amount", precision = 10, scale = 2)
     private BigDecimal totalAmount;
@@ -46,4 +49,8 @@ public class Order {
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
+
+    @Column(name="delivery_at")
+    private LocalDateTime deliveryAt;
+
 }
