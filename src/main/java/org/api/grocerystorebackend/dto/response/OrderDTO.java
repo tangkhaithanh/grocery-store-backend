@@ -3,6 +3,7 @@ package org.api.grocerystorebackend.dto.response;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.api.grocerystorebackend.entity.OrderItem;
 import org.api.grocerystorebackend.enums.StatusOrderType;
 
 import java.math.BigDecimal;

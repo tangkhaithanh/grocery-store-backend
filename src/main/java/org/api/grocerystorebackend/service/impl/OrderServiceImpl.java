@@ -11,6 +11,7 @@ import org.api.grocerystorebackend.mapper.OrderMapper;
 import org.api.grocerystorebackend.repository.OrderRepository;
 import org.api.grocerystorebackend.repository.ProductRepository;
 import org.api.grocerystorebackend.service.IOrderService;
+import org.api.grocerystorebackend.utils.ConvertDTOUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,6 +26,7 @@ public class OrderServiceImpl implements IOrderService {
     @Autowired
     private ProductRepository productRepository;
 
+
     @Autowired
     private OrderMapper orderMapper;
 
@@ -33,11 +35,18 @@ public class OrderServiceImpl implements IOrderService {
         Page<Order> listOrders;
         if(status == StatusOrderType.ALL) {
             listOrders = orderRepository.findAllByUserId(id, pageable);
+            return listOrders.map(ConvertDTOUtil::mapToOrderDTO);
             return listOrders.map(orderMapper::toDTO);
         }
         listOrders = orderRepository.findAllByStatusAndId(status, id, pageable);
+        return listOrders.map(ConvertDTOUtil::mapToOrderDTO);
+
         return listOrders.map(orderMapper::toDTO);
     }
+
+
+
+
 
     @Transactional
     @Override

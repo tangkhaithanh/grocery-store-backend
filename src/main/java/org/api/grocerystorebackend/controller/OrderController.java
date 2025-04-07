@@ -36,7 +36,21 @@ public class OrderController {
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(ApiResponse.fail("Dữ liệu trạng thái không hợp lệ"));
         } catch (Exception e) {
-            return ResponseEntity.status(500).body(ApiResponse.fail("Lấy tất cả đơn hàng của người dùng thất bại !!!!"));
+            return ResponseEntity.status(500).body(ApiResponse.fail("Lỗi hệ thống khi thực hiện chức năng lấy tất cả đơn hàng của người dùng!!!!"));
+        }
+    }
+
+    @PostMapping("/cancel")
+    public ResponseEntity<ApiResponse<?>> cancelOrder(@RequestBody CancelOrderRequest request) {
+        try {
+            Boolean result = orderService.cancelOrder(request.getUserID(), request.getOrderID());
+            if (result) {
+                return ResponseEntity.ok(ApiResponse.ok("Hủy đơn hàng thành công", null));
+            }
+            return ResponseEntity.status(404).body(ApiResponse.fail("Hủy đơn hàng thất bại!!!!"));
+        }
+        catch (Exception e) {
+            return ResponseEntity.status(500).body(ApiResponse.fail("Lỗi hệ thống khi thực hiện chức năng hủy đơn hàng!!!"));
         }
     }
     @PostMapping("/cancel")
