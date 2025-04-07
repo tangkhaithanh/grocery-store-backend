@@ -7,5 +7,4 @@ public enum StatusOrderType {
     SHIPPED,
     DELIVERED,
     CANCELED
-
 }
