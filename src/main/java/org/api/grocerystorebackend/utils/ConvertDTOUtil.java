@@ -37,6 +37,7 @@ public class ConvertDTOUtil {
                 order.getId(),
                 order.getTotalAmount(),
                 order.getDeliveryAt(),
+                order.getStatus(),
                 listOrderItemsDTO
                 );
 

@@ -1,5 +1,6 @@
 package org.api.grocerystorebackend.controller;
 
+import org.api.grocerystorebackend.dto.request.CancelOrderRequest;
 import org.api.grocerystorebackend.dto.response.ApiResponse;
 import org.api.grocerystorebackend.dto.response.OrderDTO;
 import org.api.grocerystorebackend.entity.Order;
@@ -14,10 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -38,7 +36,21 @@ public class OrderController {
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(ApiResponse.fail("Dữ liệu trạng thái không hợp lệ"));
         } catch (Exception e) {
-            return ResponseEntity.status(500).body(ApiResponse.fail("Lấy tất cả đơn hàng của người dùng thất bại !!!!"));
+            return ResponseEntity.status(500).body(ApiResponse.fail("Lỗi hệ thống khi thực hiện chức năng lấy tất cả đơn hàng của người dùng!!!!"));
+        }
+    }
+
+    @PostMapping("/cancel")
+    public ResponseEntity<ApiResponse<?>> cancelOrder(@RequestBody CancelOrderRequest request) {
+        try {
+            Boolean result = orderService.cancelOrder(request.getUserID(), request.getOrderID());
+            if (result) {
+                return ResponseEntity.ok(ApiResponse.ok("Hủy đơn hàng thành công", null));
+            }
+            return ResponseEntity.status(404).body(ApiResponse.fail("Hủy đơn hàng thất bại!!!!"));
+        }
+        catch (Exception e) {
+            return ResponseEntity.status(500).body(ApiResponse.fail("Lỗi hệ thống khi thực hiện chức năng hủy đơn hàng!!!"));
         }
     }
 }
