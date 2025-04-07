@@ -53,17 +53,4 @@ public class OrderController {
             return ResponseEntity.status(500).body(ApiResponse.fail("Lỗi hệ thống khi thực hiện chức năng hủy đơn hàng!!!"));
         }
     }
-    @PostMapping("/cancel")
-    public ResponseEntity<ApiResponse<?>> cancelOrder(@RequestBody CancelOrderRequest request) {
-        try {
-            Boolean result = orderService.cancelOrder(request.getUserID(), request.getOrderID());
-            if (result) {
-                return ResponseEntity.ok(ApiResponse.ok("Hủy đơn hàng thành công", null));
-            }
-            return ResponseEntity.status(404).body(ApiResponse.fail("Hủy đơn hàng thất bại!!!!"));
-        }
-        catch (Exception e) {
-            return ResponseEntity.status(500).body(ApiResponse.fail("Lỗi hệ thống khi thực hiện chức năng hủy đơn hàng!!!"));
-        }
-    }
 }

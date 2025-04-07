@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.api.grocerystorebackend.enums.FlashSaleStatus;
 
 import java.time.LocalDateTime;
 
@@ -30,7 +31,7 @@ public class FlashSale {
 
     @Enumerated(EnumType.STRING) // Lưu enum dưới dạng String trong DB
     @Column(name = "status", columnDefinition = "varchar(50)")
-    private String status;
+    private FlashSaleStatus status;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
