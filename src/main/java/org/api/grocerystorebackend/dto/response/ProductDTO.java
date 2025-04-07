@@ -24,4 +24,6 @@ public class ProductDTO {
     private String categoryName;
     private String categoryImage;
     private List<String> imageUrls;
+    private Double averageRating;
+    private int soldCount;
 }

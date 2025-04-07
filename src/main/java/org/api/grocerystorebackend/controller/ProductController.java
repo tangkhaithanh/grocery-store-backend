@@ -49,4 +49,74 @@ public class ProductController {
                     .body(ApiResponse.fail("Lỗi khi lấy sản phẩm theo danh mục"));
         }
     }
+
+    @GetMapping("/sorted")
+    public ResponseEntity<ApiResponse<?>> getSortedProducts(
+            @RequestParam(defaultValue = "default") String sortBy,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20")int size
+    ){
+        try
+        {
+            Pageable pageable = PageRequest.of(page, size);
+            Page<ProductDTO> result;
+            switch (sortBy.toLowerCase())
+            {
+                case "price_asc":
+                    result = productService.getProductsSortedByPriceAsc(pageable);
+                    break;
+                case "price_desc":
+                    result = productService.getProductsSortedByPriceDesc(pageable);
+                    break;
+                case "newest":
+                    result = productService.getProductsSortedByCreatedAt(pageable);
+                    break;
+                case "rating":
+                    result = productService.getProductsSortedByRating(pageable);
+                    break;
+                default:
+                    result = productService.getAllProducts(pageable);
+            }
+            return ResponseEntity.ok(ApiResponse.ok("Lọc sản phẩm thành công", result));
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError()
+                    .body(ApiResponse.fail("Lỗi khi lọc sản phẩm"));
+        }
+    }
+
+    @GetMapping("/details/{id}")
+    public ResponseEntity<ApiResponse<?>> getProductDetail(@PathVariable Long id){
+        try {
+            ProductDTO productDTO = productService.getProductById(id);
+            if (productDTO != null) {
+                return ResponseEntity.ok(ApiResponse.ok("Lấy chi tiết sản phẩm thành công", productDTO));
+            } else {
+                return ResponseEntity.status(404).body(ApiResponse.fail("Không tìm thấy sản phẩm với ID = " + id));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError()
+                    .body(ApiResponse.fail("Lỗi khi lấy chi tiết sản phẩm"));
+        }
+    }
+
+    // Best Selling Product in 7 days ago
+    @GetMapping("/best-seller")
+    public ResponseEntity<ApiResponse<?>> getBestSeller(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size
+    ) {
+        try {
+            Pageable pageable = PageRequest.of(page, size);
+            Page<ProductDTO> dtoPage = productService.getBestSellersLast7Days(pageable);
+            return ResponseEntity.ok(ApiResponse.ok("Lấy sản phẩm bán chạy thành công", dtoPage));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError()
+                    .body(ApiResponse.fail("Lỗi khi lấy sản phẩm bán chạy"));
+        }
+    }
 }

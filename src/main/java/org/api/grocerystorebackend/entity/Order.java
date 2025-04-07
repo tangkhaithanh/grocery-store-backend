@@ -6,7 +6,11 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+<<<<<<< HEAD
 import org.api.grocerystorebackend.enums.StatusOrderType;
+=======
+import org.api.grocerystorebackend.enums.OrderStatus;
+>>>>>>> dev_thanh
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -38,8 +42,13 @@ public class Order {
 
     @Enumerated(EnumType.STRING) // Lưu enum dưới dạng String trong DB
     @Column(name = "status", columnDefinition = "varchar(50)")
+<<<<<<< HEAD
     private StatusOrderType status;
 
+=======
+    @Enumerated(EnumType.STRING)
+    private OrderStatus status;
+>>>>>>> dev_thanh
 
     @Column(name = "total_amount", precision = 10, scale = 2)
     private BigDecimal totalAmount;
