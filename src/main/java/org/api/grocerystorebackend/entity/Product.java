@@ -34,9 +34,6 @@ public class Product {
     @Column(name = "price", precision = 10, scale = 2)
     private BigDecimal price;
 
-    @Column(name = "discount", precision = 10, scale = 2)
-    private BigDecimal discount;
-
     @Column(name = "quantity")
     private int quantity;
 
@@ -69,4 +66,8 @@ public class Product {
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
     @JsonManagedReference
     private List<Review> reviews;
+
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private List<FlashSaleItem> flashSaleItems;
 }

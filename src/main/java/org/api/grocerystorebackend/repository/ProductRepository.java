@@ -37,4 +37,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
         ORDER BY SUM(oi.quantity) DESC
 """)
     Page<Product> findBestSellingLast7Days(@Param("startDate") LocalDateTime startDate, Pageable pageable);
+    // Chức năng search:
+    Page<Product> findByNameContainingIgnoreCase(String name, Pageable pageable);
+
 }

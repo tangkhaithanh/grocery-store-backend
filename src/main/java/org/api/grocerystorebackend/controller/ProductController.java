@@ -119,4 +119,21 @@ public class ProductController {
                     .body(ApiResponse.fail("Lỗi khi lấy sản phẩm bán chạy"));
         }
     }
+
+    @GetMapping("/search")
+    public ResponseEntity<ApiResponse<?>> searchProductsByname(
+            @RequestParam String name,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size)
+    {
+        try {
+            Pageable pageable = PageRequest.of(page, size);
+            Page<ProductDTO> dtoPage = productService.searchProductsByName(name, pageable);
+            return ResponseEntity.ok(ApiResponse.ok("Tìm kiếm sản phẩm thành công", dtoPage));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError()
+                    .body(ApiResponse.fail("Lỗi khi tìm kiếm sản phẩm"));
+        }
+    }
 }

@@ -16,7 +16,6 @@ public class ProductDTO {
     private String name;
     private String description;
     private BigDecimal price;
-    private BigDecimal discount;
     private int quantity;
     private String status;
     private LocalDateTime createdAt;
@@ -26,4 +25,5 @@ public class ProductDTO {
     private List<String> imageUrls;
     private Double averageRating;
     private int soldCount;
+    private BigDecimal effectivePrice;
 }
