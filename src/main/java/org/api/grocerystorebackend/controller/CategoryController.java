@@ -32,7 +32,5 @@ public class CategoryController {
             return ResponseEntity.internalServerError()
                     .body(ApiResponse.fail("Lỗi khi lấy danh mục sản phẩm"));
         }
-
-
     }
 }
