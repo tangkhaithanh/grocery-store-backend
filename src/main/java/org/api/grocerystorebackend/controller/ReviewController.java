@@ -2,7 +2,6 @@ package org.api.grocerystorebackend.controller;
 
 import org.api.grocerystorebackend.dto.request.ReviewRequest;
 import org.api.grocerystorebackend.dto.response.ApiResponse;
-import org.api.grocerystorebackend.dto.response.DeliveredOrderDTO;
 import org.api.grocerystorebackend.dto.response.ReviewDTO;
 import org.api.grocerystorebackend.entity.User;
 import org.api.grocerystorebackend.repository.OrderRepository;
@@ -40,16 +39,16 @@ public class ReviewController {
         }
     }
 
-    @GetMapping("/delivered-with-review-status")
-    public ResponseEntity<ApiResponse<?>> getDeliveredOrders(
-            @AuthenticationPrincipal AccountDetails accountDetails) {
+    @GetMapping("/product/{productId}")
+    public ResponseEntity<ApiResponse<?>> getReviewsByProduct(@PathVariable Long productId,
+                                                              @AuthenticationPrincipal AccountDetails accountDetails) {
         try {
-            User user = accountDetails.getAccount().getUser();
-            List<DeliveredOrderDTO> result = reviewService.getDeliveredOrdersWithReviewStatus(user);
-            return ResponseEntity.ok(ApiResponse.ok("Thành công", result));
+            List<ReviewDTO> reviews = reviewService.getReviewsByProduct(productId);
+            return ResponseEntity.ok(ApiResponse.ok("Lấy danh sách đánh giá thành công", reviews));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(ApiResponse.fail("Lỗi khi lấy dữ liệu đơn hàng đã giao"));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ApiResponse.fail("Lỗi khi lấy đánh giá: " + e.getMessage()));
         }
     }
 }
+
