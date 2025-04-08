@@ -56,44 +56,10 @@ public class ReviewServiceImpl implements IReviewService {
     }
 
     @Override
-    public List<ReviewDTO> getReviewsByProduct(Long productId, User currentUser) {
+    public List<ReviewDTO> getReviewsByProduct(Long productId) {
         List<Review> reviews = reviewRepository.findByProductIdOrderByCreatedAtDesc(productId);
         return reviews.stream()
                 .map(review -> reviewMapper.toDTO(review))
                 .toList();
-    }
-
-    @Override
-    public List<DeliveredOrderDTO> getDeliveredOrdersWithReviewStatus(User user) {
-        List<Order> orders = orderRepository.findByUserIdAndStatus(user.getId(), StatusOrderType.DELIVERED);
-
-        return orders.stream().map(order -> {
-            List<Review> reviews = reviewRepository.findByUserIdAndOrderId(user.getId(), order.getId());
-            Set<Long> reviewedProductIds = reviews.stream()
-                    .map(r -> r.getProduct().getId())
-                    .collect(Collectors.toSet());
-
-            List<ProductReviewStatusDTO> products = order.getOrderItems().stream()
-                    .map(item -> {
-                        Product product = item.getProduct();
-                        String thumbnail = product.getImages().stream()
-                                .findFirst()
-                                .map(ProductImage::getImageUrl)
-                                .orElse(null);
-
-                        return new ProductReviewStatusDTO(
-                                product.getId(),
-                                product.getName(),
-                                thumbnail,
-                                reviewedProductIds.contains(product.getId())
-                        );
-                    }).toList();
-
-            return new DeliveredOrderDTO(
-                    order.getId(),
-                    order.getDeliveryAt(),
-                    products
-            );
-        }).toList();
     }
 }

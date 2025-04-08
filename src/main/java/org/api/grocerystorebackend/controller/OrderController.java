@@ -31,8 +31,6 @@ public class OrderController {
     @Autowired
     private IOrderService orderService;
 
-    @Autowired
-    private IReviewService reviewService;
     @GetMapping("")
     public ResponseEntity<ApiResponse<?>> getOrders(@RequestParam(name = "id") Long id,
                                                     @RequestParam(name="typeStatusOrder",defaultValue = "ALL", required = false) StatusOrderType typeStatusOrder,
@@ -68,7 +66,7 @@ public class OrderController {
             @AuthenticationPrincipal AccountDetails accountDetails) {
         try {
             User user = accountDetails.getAccount().getUser();
-            List<DeliveredOrderDTO> result = reviewService.getDeliveredOrdersWithReviewStatus(user);
+            List<DeliveredOrderDTO> result = orderService.getDeliveredOrdersWithReviewStatus(user);
             return ResponseEntity.ok(ApiResponse.ok("Thành công", result));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
