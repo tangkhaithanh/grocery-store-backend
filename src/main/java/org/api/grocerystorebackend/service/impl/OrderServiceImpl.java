@@ -17,6 +17,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -81,6 +82,12 @@ public class OrderServiceImpl implements IOrderService {
             Set<Long> reviewedProductIds = reviews.stream()
                     .map(r -> r.getProduct().getId())
                     .collect(Collectors.toSet());
+            // Thời điểm hiện tại
+            LocalDateTime now = LocalDateTime.now();
+
+            // Kiểm tra xem đơn hàng đã giao có quá 1 tháng chưa
+            boolean isWithinOneMonth = order.getDeliveryAt() != null &&
+                    order.getDeliveryAt().isAfter(now.minusMonths(1));
 
             List<ProductReviewStatusDTO> products = order.getOrderItems().stream()
                     .map(item -> {
@@ -89,12 +96,17 @@ public class OrderServiceImpl implements IOrderService {
                                 .findFirst()
                                 .map(ProductImage::getImageUrl)
                                 .orElse(null);
+                        boolean isReviewed = reviewedProductIds.contains(product.getId());
+
+                        // Sản phẩm chỉ có thể đánh giá nếu chưa đánh giá và trong vòng 1 tháng kể từ khi giao hàng
+                        boolean canReview = !isReviewed && isWithinOneMonth;
 
                         return new ProductReviewStatusDTO(
                                 product.getId(),
                                 product.getName(),
                                 thumbnail,
-                                reviewedProductIds.contains(product.getId())
+                                isReviewed,
+                                canReview
                         );
                     }).toList();
 

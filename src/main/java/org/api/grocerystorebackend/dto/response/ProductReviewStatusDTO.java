@@ -12,4 +12,5 @@ public class ProductReviewStatusDTO {
     private String productName;
     private String image;
     private boolean reviewed;
+    private boolean canReview;
 }

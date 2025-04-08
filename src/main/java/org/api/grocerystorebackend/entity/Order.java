@@ -28,7 +28,7 @@ public class Order {
     private User user;
 
     @ManyToOne
-    @JoinColumn(name="voucher_id", nullable = false)
+    @JoinColumn(name="voucher_id", nullable = true)
     @JsonBackReference
     private Voucher voucher;
 
