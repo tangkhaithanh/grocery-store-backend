@@ -35,4 +35,9 @@ public class OrderItem {
 
     @Column(name = "price", precision = 10, scale = 2)
     private BigDecimal price;
+
+    @ManyToOne
+    @JoinColumn(name = "flash_sale_item_id")
+    private FlashSaleItem flashSaleItem;
+
 }

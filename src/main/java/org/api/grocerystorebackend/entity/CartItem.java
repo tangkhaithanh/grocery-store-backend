@@ -27,4 +27,8 @@ public class CartItem {
 
     @Column(name="quantity", nullable = false)
     private int quantity;
+
+    @ManyToOne
+    @JoinColumn(name = "flash_sale_item_id")
+    private FlashSaleItem flashSaleItem;
 }
