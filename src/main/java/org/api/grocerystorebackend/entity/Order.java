@@ -28,13 +28,17 @@ public class Order {
     private User user;
 
     @ManyToOne
-    @JoinColumn(name="voucher_id", nullable = false)
+    @JoinColumn(name="voucher_id", nullable = true)
     @JsonBackReference
     private Voucher voucher;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<OrderItem> orderItems;
+
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<Review> reviews;
 
     @Enumerated(EnumType.STRING) // Lưu enum dưới dạng String trong DB
     @Column(name = "status", columnDefinition = "varchar(50)")

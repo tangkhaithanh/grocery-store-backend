@@ -75,4 +75,10 @@ public class AccountServiceImpl implements IAccountService {
 
         return true;
     }
+
+    @Override
+    public Account getByEmail(String email) {
+        return accountRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy tài khoản với email: " + email));
+    }
 }

@@ -13,13 +13,12 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface OrderRepository extends JpaRepository<Order, Integer> {
+public interface OrderRepository extends JpaRepository<Order, Long> {
     Page<Order> findAllByUserId(Long id, Pageable pageable);
 
     Page<Order> findAllByStatusAndId(StatusOrderType status, Long id, Pageable pageable);
 
-
-
     Order findByUserIdAndId(Long userID, Long orderID);
 
+    List<Order> findByUserIdAndStatus(Long userId, StatusOrderType status);
 }

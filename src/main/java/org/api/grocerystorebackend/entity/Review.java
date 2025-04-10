@@ -27,6 +27,11 @@ public class Review {
     @JsonBackReference
     private User user;
 
+    @ManyToOne
+    @JoinColumn(name = "order_id", nullable = false)
+    @JsonBackReference
+    private Order order;
+
     @Column(name = "rating")
     private int rating;
 

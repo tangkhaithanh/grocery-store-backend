@@ -124,11 +124,15 @@ public class ProductController {
     public ResponseEntity<ApiResponse<?>> searchProductsByname(
             @RequestParam String name,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size)
-    {
+            @RequestParam(defaultValue = "20") int size) {
         try {
             Pageable pageable = PageRequest.of(page, size);
             Page<ProductDTO> dtoPage = productService.searchProductsByName(name, pageable);
+
+            if (dtoPage.isEmpty()) {
+                return ResponseEntity.ok(ApiResponse.ok("Không tìm thấy sản phẩm nào phù hợp", dtoPage));
+            }
+
             return ResponseEntity.ok(ApiResponse.ok("Tìm kiếm sản phẩm thành công", dtoPage));
         } catch (Exception e) {
             e.printStackTrace();
