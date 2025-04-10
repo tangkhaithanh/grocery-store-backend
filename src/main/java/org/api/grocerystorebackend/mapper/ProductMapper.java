@@ -1,6 +1,7 @@
 package org.api.grocerystorebackend.mapper;
 
 import org.api.grocerystorebackend.dto.response.ProductDTO;
+import org.api.grocerystorebackend.dto.response.ProductSimpleDTO;
 import org.api.grocerystorebackend.entity.Product;
 import org.api.grocerystorebackend.enums.StatusOrderType;
 import org.api.grocerystorebackend.service.IPricingService;
@@ -52,5 +53,18 @@ public class ProductMapper {
                 soldCount,
                 effectivePrice
         );
+    }
+    public ProductSimpleDTO toSimpleDTO(Product product) {
+        List<String> imageUrls = product.getImages().stream()
+                .map(img -> img.getImageUrl())
+                .toList();
+
+        return new ProductSimpleDTO(
+                product.getId(),
+                product.getName(),
+                product.getPrice(),
+                imageUrls.get(0)
+        );
+
     }
 }

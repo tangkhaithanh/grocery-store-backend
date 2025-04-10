@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
@@ -27,6 +29,9 @@ public class CartItem {
 
     @Column(name="quantity", nullable = false)
     private int quantity;
+
+    @Column(name = "price", precision = 10, scale = 2)
+    private BigDecimal price;
 
     @ManyToOne
     @JoinColumn(name = "flash_sale_item_id")
