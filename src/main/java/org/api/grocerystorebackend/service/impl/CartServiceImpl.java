@@ -1,5 +1,6 @@
 package org.api.grocerystorebackend.service.impl;
 
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.api.grocerystorebackend.dto.response.CartDTO;
 import org.api.grocerystorebackend.dto.response.CartItemDTO;
@@ -16,8 +17,10 @@ import org.api.grocerystorebackend.repository.UserRepository;
 import org.api.grocerystorebackend.service.ICartService;
 import org.api.grocerystorebackend.service.IFlashSaleService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import javax.swing.text.html.Option;
@@ -110,5 +113,15 @@ public class CartServiceImpl implements ICartService {
             }
         }
         //Thiếu check isOutOfStock -> Chưa nghĩ ra.
+    }
+
+    @Override
+    public void removeToCart(Long cartItemId, Long userId) {
+        Optional<CartItem> cartItem = Optional.ofNullable(cartItemRepository.findById(cartItemId)
+                .orElseThrow(() -> new EntityNotFoundException("Cart item not found")));
+        if(!cartItem.get().getCart().getUser().getId().equals(userId)) {
+            throw new AccessDeniedException("Bạn không có quyền xóa sản phẩm này khỏi giỏ hàng");
+        }
+        cartItemRepository.deleteById(cartItemId);
     }
 }
