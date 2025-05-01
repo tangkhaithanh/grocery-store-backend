@@ -16,7 +16,8 @@ import java.util.List;
 public interface OrderRepository extends JpaRepository<Order, Long> {
     Page<Order> findAllByUserId(Long id, Pageable pageable);
 
-    Page<Order> findAllByStatusAndId(StatusOrderType status, Long id, Pageable pageable);
+    @Query("SELECT o FROM Order o WHERE o.status = :status AND o.user.id = :userID")
+    Page<Order> findAllByStatusAndId(@Param("status") StatusOrderType status, @Param("userID") Long id, Pageable pageable);
 
     Order findByUserIdAndId(Long userID, Long orderID);
 
