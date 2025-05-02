@@ -38,10 +38,11 @@ public class CartController {
     @GetMapping()
     public ResponseEntity<ApiResponse<?>> getAllCarts(@RequestParam(defaultValue = "0") int page,
                                                       @RequestParam(defaultValue = "20") int size,
-                                                      @RequestParam(name="userID") Long userID) {
+                                                      @AuthenticationPrincipal AccountDetails accountDetails) {
         try {
+            Long userId = accountDetails.getAccount().getUser().getId();
             Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
-            Page<CartDTO> listCarts = cartService.getCarts(pageable, userID);
+            Page<CartDTO> listCarts = cartService.getCarts(pageable, userId);
             return ResponseEntity.ok(ApiResponse.ok("Lấy tất cả sản phẩm trong giỏ hàng thành công", listCarts));
         }
         catch(Exception e) {
@@ -52,9 +53,11 @@ public class CartController {
     }
 
     @PostMapping("/addToCart")
-    public ResponseEntity<ApiResponse<?>> addToCart(@RequestBody CartItemRequest request) {
+    public ResponseEntity<ApiResponse<?>> addToCart(@RequestBody CartItemDTO request, @AuthenticationPrincipal AccountDetails accountDetails) {
         try {
-            cartService.addOrUpdateToCart(request.getCartItemDTO(), request.getUserID());
+            Long userId = accountDetails.getAccount().getUser().getId();
+
+            cartService.addOrUpdateToCart(request, userId);
             return ResponseEntity.ok(ApiResponse.ok("Thêm sản phẩm vào giỏ hàng thành công", null));
         }
         catch (Exception e) {

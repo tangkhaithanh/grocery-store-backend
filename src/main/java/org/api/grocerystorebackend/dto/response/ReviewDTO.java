@@ -16,6 +16,6 @@ public class ReviewDTO {
     private String imageUrl;
     private String userFullName;
     private Long userId;
-    private Long orderId;
+    private Long orderItemId;
     private LocalDateTime createdAt;
 }

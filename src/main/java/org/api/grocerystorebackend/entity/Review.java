@@ -17,20 +17,15 @@ public class Review {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name="product_id", nullable = false)
-    @JsonBackReference
-    private Product product;
+    @OneToOne
+    @JoinColumn(name = "order_item_id", unique = true, nullable = false)
+    private OrderItem orderItem;
+
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     @JsonBackReference
     private User user;
-
-    @ManyToOne
-    @JoinColumn(name = "order_id", nullable = false)
-    @JsonBackReference
-    private Order order;
 
     @Column(name = "rating")
     private int rating;

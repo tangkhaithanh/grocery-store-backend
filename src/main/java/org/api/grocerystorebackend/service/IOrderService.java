@@ -15,5 +15,4 @@ public interface IOrderService {
 
     Boolean cancelOrder(Long userID, long orderID);
 
-    List<DeliveredOrderDTO> getDeliveredOrdersWithReviewStatus(User user);
 }

@@ -39,46 +39,7 @@ public class OrderServiceImpl implements IOrderService {
             listOrders = orderRepository.findAllByUserId(id, pageable);
             return listOrders.map(orderMapper::toDTO);
         }
-        else if(status == StatusOrderType.DELIVERED) {
-            listOrders = orderRepository.findAllByStatusAndId(status, id, pageable);
-            Page<OrderDTO> orders = listOrders.map(orderMapper::toDTO);
-            return orders.map( order -> {
-                List<Review> reviews = reviewRepository.findByUserIdAndOrderId(id, order.getId());
-                Set<Long> reviewedProductIds = reviews.stream()
-                        .map(r -> r.getProduct().getId())
-                        .collect(Collectors.toSet());
-                // Thời điểm hiện tại
-                LocalDateTime now = LocalDateTime.now();
 
-                // Kiểm tra xem đơn hàng đã giao có quá 1 tháng chưa
-                boolean isWithinOneMonth = order.getDeliveryAt() != null &&
-                        order.getDeliveryAt().isAfter(now.minusMonths(1));
-
-                order.getOrderItems().stream()
-                    .map(item -> {
-                        ProductDTO product = item.getProduct();
-
-                        boolean isReviewed = reviewedProductIds.contains(product.getId());
-
-                        // Sản phẩm chỉ có thể đánh giá nếu chưa đánh giá và trong vòng 1 tháng kể từ khi giao hàng
-                        boolean canReview = !isReviewed && isWithinOneMonth;
-                        order.getOrderItems().stream().map(
-                                orderItem -> {
-                                    if(orderItem.getProduct().getId() == product.getId()) {
-                                        orderItem.setCanReview(canReview);
-                                        orderItem.setReviewed(isReviewed);
-                                    }
-                                    return orderItem;
-                                }
-                        ).toList();
-
-                        return null;
-                    }).toList();
-
-                return order;
-                }
-            );
-        }
         listOrders = orderRepository.findAllByStatusAndId(status, id, pageable);
         return listOrders.map(orderMapper::toDTO);
     }
@@ -110,48 +71,4 @@ public class OrderServiceImpl implements IOrderService {
         return true;
     }
 
-    @Override
-    public List<DeliveredOrderDTO> getDeliveredOrdersWithReviewStatus(User user) {
-        List<Order> orders = orderRepository.findByUserIdAndStatus(user.getId(), StatusOrderType.DELIVERED);
-
-        return orders.stream().map(order -> {
-            List<Review> reviews = reviewRepository.findByUserIdAndOrderId(user.getId(), order.getId());
-            Set<Long> reviewedProductIds = reviews.stream()
-                    .map(r -> r.getProduct().getId())
-                    .collect(Collectors.toSet());
-            // Thời điểm hiện tại
-            LocalDateTime now = LocalDateTime.now();
-
-            // Kiểm tra xem đơn hàng đã giao có quá 1 tháng chưa
-            boolean isWithinOneMonth = order.getDeliveryAt() != null &&
-                    order.getDeliveryAt().isAfter(now.minusMonths(1));
-
-            List<ProductReviewStatusDTO> products = order.getOrderItems().stream()
-                    .map(item -> {
-                        Product product = item.getProduct();
-                        String thumbnail = product.getImages().stream()
-                                .findFirst()
-                                .map(ProductImage::getImageUrl)
-                                .orElse(null);
-                        boolean isReviewed = reviewedProductIds.contains(product.getId());
-
-                        // Sản phẩm chỉ có thể đánh giá nếu chưa đánh giá và trong vòng 1 tháng kể từ khi giao hàng
-                        boolean canReview = !isReviewed && isWithinOneMonth;
-
-                        return new ProductReviewStatusDTO(
-                                product.getId(),
-                                product.getName(),
-                                thumbnail,
-                                isReviewed,
-                                canReview
-                        );
-                    }).toList();
-
-            return new DeliveredOrderDTO(
-                    order.getId(),
-                    order.getDeliveryAt(),
-                    products
-            );
-        }).toList();
-    }
 }

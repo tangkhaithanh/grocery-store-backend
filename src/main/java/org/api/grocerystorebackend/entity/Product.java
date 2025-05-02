@@ -63,9 +63,6 @@ public class Product {
     @JsonManagedReference
     private List<FavouriteProduct> favouriteProducts;
 
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
-    @JsonManagedReference
-    private List<Review> reviews;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
     @JsonManagedReference

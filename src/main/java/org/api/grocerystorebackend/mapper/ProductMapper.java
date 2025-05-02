@@ -22,12 +22,14 @@ public class ProductMapper {
                 .toList();
 
         double avgRating = 0.0;
-        if (product.getReviews() != null && !product.getReviews().isEmpty()) {
-            avgRating = product.getReviews().stream()
-                    .mapToInt(r -> r.getRating())
+        if (product.getOrderItems() != null) {
+            avgRating = product.getOrderItems().stream()
+                    .filter(r -> r.getReview() != null) // Lọc ra các OrderItem đã được review
+                    .mapToInt(r -> r.getReview().getRating())
                     .average()
                     .orElse(0.0);
         }
+
 
         int soldCount = product.getOrderItems().stream()
                 .filter(item -> item.getOrder() != null &&

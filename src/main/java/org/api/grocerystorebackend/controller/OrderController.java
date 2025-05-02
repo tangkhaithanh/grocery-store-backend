@@ -63,16 +63,4 @@ public class OrderController {
         }
     }
 
-    @GetMapping("/delivered-with-review-status")
-    public ResponseEntity<ApiResponse<List<DeliveredOrderDTO>>> getDeliveredOrders(
-            @AuthenticationPrincipal AccountDetails accountDetails) {
-        try {
-            User user = accountDetails.getAccount().getUser();
-            List<DeliveredOrderDTO> result = orderService.getDeliveredOrdersWithReviewStatus(user);
-            return ResponseEntity.ok(ApiResponse.ok("Thành công", result));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(ApiResponse.fail("Lỗi khi lấy dữ liệu"));
-        }
-    }
 }

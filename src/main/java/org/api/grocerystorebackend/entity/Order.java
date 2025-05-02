@@ -36,9 +36,7 @@ public class Order {
     @JsonManagedReference
     private List<OrderItem> orderItems;
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
-    private List<Review> reviews;
+    
 
     @Enumerated(EnumType.STRING) // Lưu enum dưới dạng String trong DB
     @Column(name = "status", columnDefinition = "varchar(50)")
