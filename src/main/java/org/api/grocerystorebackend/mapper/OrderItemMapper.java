@@ -15,7 +15,9 @@ public class OrderItemMapper {
                 orderItem.getId(),
                 orderItem.getQuantity(),
                 orderItem.getPrice(),
-                productMapper.toDTO(orderItem.getProduct())
+                productMapper.toDTO(orderItem.getProduct()),
+                false,
+                false
         );
     }
 }
