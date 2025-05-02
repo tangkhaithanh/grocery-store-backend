@@ -81,4 +81,10 @@ public class ProductServiceImpl implements IProductService {
         Page<Product> productPage= productRepository.findByNameContainingIgnoreCase(name, pageable);
         return productPage.map(productMapper::toDTO);
     }
+
+    /*@Override
+    public Page<ProductDTO> getFeaturedProducts(Pageable pageable) {
+      *//*  Page<Product> productPage=productRepository.findFeaturedProducts(pageable);
+        return productPage.map(productMapper::toDTO);*//*
+    }*/
 }

@@ -119,7 +119,6 @@ public class ProductController {
                     .body(ApiResponse.fail("Lỗi khi lấy sản phẩm bán chạy"));
         }
     }
-
     @GetMapping("/search")
     public ResponseEntity<ApiResponse<?>> searchProductsByname(
             @RequestParam String name,
@@ -140,4 +139,18 @@ public class ProductController {
                     .body(ApiResponse.fail("Lỗi khi tìm kiếm sản phẩm"));
         }
     }
+    /*@GetMapping("/featured")
+    public ResponseEntity<ApiResponse<?>> getFeaturedProducts(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        try {
+            Pageable pageable = PageRequest.of(page, size);
+            Page<ProductDTO> featuredProducts = productService.getFeaturedProducts(pageable);
+            return ResponseEntity.ok(ApiResponse.ok("Lấy sản phẩm nổi bật thành công", featuredProducts));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError()
+                    .body(ApiResponse.fail("Lỗi khi lấy sản phẩm nổi bật"));
+        }
+    }*/
 }

@@ -22,4 +22,6 @@ public interface IProductService {
     Page<ProductDTO>getBestSellersLast7Days(Pageable pageable);
 
     Page<ProductDTO> searchProductsByName(String name, Pageable pageable);
+
+   //Page<ProductDTO> getFeaturedProducts(Pageable pageable);
 }

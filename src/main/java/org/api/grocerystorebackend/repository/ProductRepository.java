@@ -31,7 +31,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
         SELECT p FROM Product p
         JOIN p.orderItems oi
         JOIN oi.order o
-        WHERE o.status = 'COMPLETED'
+        WHERE o.status = 'DELIVERED'
           AND o.createdAt >= :startDate
         GROUP BY p
         ORDER BY SUM(oi.quantity) DESC
@@ -40,4 +40,17 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     // Chức năng search:
     Page<Product> findByNameContainingIgnoreCase(String name, Pageable pageable);
 
+   /* // Lay san pham noi bat:
+    @Query("SELECT p, " +
+            "COUNT(DISTINCT o.id) as orderCount, " +
+            "COUNT(DISTINCT r.id) as reviewCount, " +
+            "COUNT(DISTINCT f.id) as favoriteCount " +
+            "FROM Product p " +
+            "LEFT JOIN p.orderItems o " +
+            "LEFT JOIN p.reviews r " +
+            "LEFT JOIN p.favouriteProducts f " +
+            "WHERE p.status = 'ACTIVE' AND p.quantity > 0 " +
+            "GROUP BY p.id " +
+            "ORDER BY (orderCount + reviewCount + favoriteCount) DESC")
+    Page<Product> findFeaturedProducts(Pageable pageable);*/
 }
