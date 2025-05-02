@@ -1,10 +1,7 @@
 package org.api.grocerystorebackend.service.impl;
 
 import jakarta.transaction.Transactional;
-import org.api.grocerystorebackend.dto.response.DeliveredOrderDTO;
-import org.api.grocerystorebackend.dto.response.OrderDTO;
-import org.api.grocerystorebackend.dto.response.OrderItemDTO;
-import org.api.grocerystorebackend.dto.response.ProductReviewStatusDTO;
+import org.api.grocerystorebackend.dto.response.*;
 import org.api.grocerystorebackend.entity.*;
 import org.api.grocerystorebackend.enums.StatusOrderType;
 import org.api.grocerystorebackend.mapper.OrderMapper;
@@ -42,6 +39,7 @@ public class OrderServiceImpl implements IOrderService {
             listOrders = orderRepository.findAllByUserId(id, pageable);
             return listOrders.map(orderMapper::toDTO);
         }
+
         listOrders = orderRepository.findAllByStatusAndId(status, id, pageable);
         return listOrders.map(orderMapper::toDTO);
     }
@@ -73,48 +71,4 @@ public class OrderServiceImpl implements IOrderService {
         return true;
     }
 
-    @Override
-    public List<DeliveredOrderDTO> getDeliveredOrdersWithReviewStatus(User user) {
-        List<Order> orders = orderRepository.findByUserIdAndStatus(user.getId(), StatusOrderType.DELIVERED);
-
-        return orders.stream().map(order -> {
-            List<Review> reviews = reviewRepository.findByUserIdAndOrderId(user.getId(), order.getId());
-            Set<Long> reviewedProductIds = reviews.stream()
-                    .map(r -> r.getProduct().getId())
-                    .collect(Collectors.toSet());
-            // Thời điểm hiện tại
-            LocalDateTime now = LocalDateTime.now();
-
-            // Kiểm tra xem đơn hàng đã giao có quá 1 tháng chưa
-            boolean isWithinOneMonth = order.getDeliveryAt() != null &&
-                    order.getDeliveryAt().isAfter(now.minusMonths(1));
-
-            List<ProductReviewStatusDTO> products = order.getOrderItems().stream()
-                    .map(item -> {
-                        Product product = item.getProduct();
-                        String thumbnail = product.getImages().stream()
-                                .findFirst()
-                                .map(ProductImage::getImageUrl)
-                                .orElse(null);
-                        boolean isReviewed = reviewedProductIds.contains(product.getId());
-
-                        // Sản phẩm chỉ có thể đánh giá nếu chưa đánh giá và trong vòng 1 tháng kể từ khi giao hàng
-                        boolean canReview = !isReviewed && isWithinOneMonth;
-
-                        return new ProductReviewStatusDTO(
-                                product.getId(),
-                                product.getName(),
-                                thumbnail,
-                                isReviewed,
-                                canReview
-                        );
-                    }).toList();
-
-            return new DeliveredOrderDTO(
-                    order.getId(),
-                    order.getDeliveryAt(),
-                    products
-            );
-        }).toList();
-    }
 }

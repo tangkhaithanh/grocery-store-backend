@@ -3,6 +3,7 @@ package org.api.grocerystorebackend.mapper;
 import org.api.grocerystorebackend.dto.response.OrderDTO;
 import org.api.grocerystorebackend.dto.response.OrderItemDTO;
 import org.api.grocerystorebackend.entity.Order;
+import org.api.grocerystorebackend.enums.StatusOrderType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -16,7 +17,9 @@ public class OrderMapper {
     public OrderDTO toDTO(Order order) {
         List<OrderItemDTO> orderItemDTOs = order.getOrderItems()
                 .stream()
-                .map(orderItemMapper::toDTO)
+                .map(orderItem ->
+                    orderItemMapper.toDTO(orderItem, order.getDeliveryAt())
+                )
                 .toList();
 
         return new OrderDTO(

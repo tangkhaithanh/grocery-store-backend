@@ -14,4 +14,5 @@ public class OrderItemDTO {
     private int quantity;
     private BigDecimal price;
     private ProductDTO product;
+    private boolean canReview;
 }

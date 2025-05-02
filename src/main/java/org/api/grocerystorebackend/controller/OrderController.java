@@ -32,13 +32,14 @@ public class OrderController {
     private IOrderService orderService;
 
     @GetMapping("")
-    public ResponseEntity<ApiResponse<?>> getOrders(@RequestParam(name = "id") Long id,
+    public ResponseEntity<ApiResponse<?>> getOrders(@AuthenticationPrincipal AccountDetails accountDetails,
                                                     @RequestParam(name="typeStatusOrder",defaultValue = "ALL", required = false) StatusOrderType typeStatusOrder,
                                                     @RequestParam(defaultValue = "0") int page,
                                                     @RequestParam(defaultValue = "20") int size) {
         try {
             Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
-            Page<OrderDTO> orders = orderService.getAllOrdersByStatusAndIDUser(pageable, typeStatusOrder, id);
+            Long userID = accountDetails.getAccount().getId();
+            Page<OrderDTO> orders = orderService.getAllOrdersByStatusAndIDUser(pageable, typeStatusOrder, userID);
             return ResponseEntity.ok(ApiResponse.ok("Lấy tất cả đơn hàng của người dùng thành công", orders));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(ApiResponse.fail("Dữ liệu trạng thái không hợp lệ"));
@@ -48,9 +49,10 @@ public class OrderController {
     }
 
     @PostMapping("/cancel")
-    public ResponseEntity<ApiResponse<?>> cancelOrder(@RequestBody CancelOrderRequest request) {
+    public ResponseEntity<ApiResponse<?>> cancelOrder(@AuthenticationPrincipal AccountDetails accountDetails, @RequestBody Long orderId) {
         try {
-            Boolean result = orderService.cancelOrder(request.getUserID(), request.getOrderID());
+            Long userID = accountDetails.getAccount().getId();
+            Boolean result = orderService.cancelOrder(userID, orderId);
             if (result) {
                 return ResponseEntity.ok(ApiResponse.ok("Hủy đơn hàng thành công", null));
             }
@@ -61,16 +63,4 @@ public class OrderController {
         }
     }
 
-    @GetMapping("/delivered-with-review-status")
-    public ResponseEntity<ApiResponse<List<DeliveredOrderDTO>>> getDeliveredOrders(
-            @AuthenticationPrincipal AccountDetails accountDetails) {
-        try {
-            User user = accountDetails.getAccount().getUser();
-            List<DeliveredOrderDTO> result = orderService.getDeliveredOrdersWithReviewStatus(user);
-            return ResponseEntity.ok(ApiResponse.ok("Thành công", result));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(ApiResponse.fail("Lỗi khi lấy dữ liệu"));
-        }
-    }
 }

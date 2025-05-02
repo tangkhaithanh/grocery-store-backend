@@ -40,4 +40,6 @@ public class OrderItem {
     @JoinColumn(name = "flash_sale_item_id")
     private FlashSaleItem flashSaleItem;
 
+    @OneToOne(mappedBy = "orderItem", cascade = CascadeType.ALL)
+    private Review review;
 }

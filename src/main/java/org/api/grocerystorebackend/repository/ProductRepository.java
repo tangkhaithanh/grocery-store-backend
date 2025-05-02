@@ -20,14 +20,18 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     Page<Product> findAllByOrderByCreatedAtDesc(Pageable pageable);
 
     @Query("""
-        SELECT p FROM Product p
-        LEFT JOIN p.reviews r
-        GROUP BY p
-        ORDER BY AVG(r.rating) DESC
-    """)
+    SELECT p FROM Product p
+    LEFT JOIN p.orderItems oi
+    LEFT JOIN oi.review r
+    WHERE r IS NOT NULL
+    GROUP BY p
+    ORDER BY AVG(r.rating) DESC
+""")
     Page<Product> findAllOrderByAverageRatingDesc(Pageable pageable);
 
-        @Query("""
+
+
+    @Query("""
         SELECT p FROM Product p
         JOIN p.orderItems oi
         JOIN oi.order o

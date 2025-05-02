@@ -16,7 +16,7 @@ import java.util.Objects;
                     review.getImageUrl(),
                     review.getUser().getFullName(),
                     review.getUser().getId(),
-                    review.getOrder().getId(),
+                    review.getOrderItem().getId(),
                     review.getCreatedAt()
             );
         }
