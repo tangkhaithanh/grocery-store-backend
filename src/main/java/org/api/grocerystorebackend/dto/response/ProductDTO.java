@@ -20,6 +20,7 @@ public class ProductDTO {
     private String status;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private Long CategoryId;
     private String categoryName;
     private String categoryImage;
     private List<String> imageUrls;

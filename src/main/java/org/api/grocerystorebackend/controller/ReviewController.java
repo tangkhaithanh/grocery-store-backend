@@ -3,6 +3,7 @@ package org.api.grocerystorebackend.controller;
 import org.api.grocerystorebackend.dto.request.ReviewRequest;
 import org.api.grocerystorebackend.dto.response.ApiResponse;
 import org.api.grocerystorebackend.dto.response.ReviewDTO;
+import org.api.grocerystorebackend.dto.response.ReviewStatsDTO;
 import org.api.grocerystorebackend.entity.User;
 import org.api.grocerystorebackend.repository.OrderRepository;
 import org.api.grocerystorebackend.security.AccountDetails;
@@ -54,6 +55,17 @@ public class ReviewController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(ApiResponse.fail("Lỗi khi lấy đánh giá: " + e.getMessage()));
+        }
+    }
+
+    @GetMapping("/stats/{productId}")
+    public ResponseEntity<ApiResponse<?>> getProductReviewStats(@PathVariable Long productId) {
+        try {
+            ReviewStatsDTO stats = reviewService.getProductReviewStats(productId);
+            return ResponseEntity.ok(ApiResponse.ok("Lấy thống kê đánh giá thành công", stats));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ApiResponse.fail("Lỗi khi lấy thống kê đánh giá: " + e.getMessage()));
         }
     }
 }

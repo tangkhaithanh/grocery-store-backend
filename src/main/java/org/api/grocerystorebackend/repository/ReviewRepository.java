@@ -15,4 +15,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 
 
     Page<Review> findByOrderItemProductId(Long productId, Pageable pageable);
+
+    // New method for getting all reviews for a product (no pagination)
+    List<Review> findAllByOrderItemProductId(Long productId);
 }

@@ -1,12 +1,14 @@
 package org.api.grocerystorebackend.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @AllArgsConstructor
@@ -33,9 +35,12 @@ public class Review {
     @Column(name = "comment", columnDefinition = "text")
     private String comment;
 
-    @Column(name = "image_url", columnDefinition = "varchar(255)")
-    private String imageUrl;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
+
+    /** Danh sách hình */
+    @OneToMany(mappedBy = "review", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<ReviewImage> images;
 }

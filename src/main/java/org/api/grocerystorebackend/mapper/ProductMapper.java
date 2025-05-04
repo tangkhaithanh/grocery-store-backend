@@ -48,6 +48,7 @@ public class ProductMapper {
                 product.getStatus(),
                 product.getCreatedAt(),
                 product.getUpdatedAt(),
+                product.getCategory().getId(),
                 product.getCategory().getName(),
                 product.getCategory().getImageUrl(),
                 imageUrls,
