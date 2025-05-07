@@ -120,37 +120,23 @@ public class ProductController {
         }
     }
     @GetMapping("/search")
-    public ResponseEntity<ApiResponse<?>> searchProductsByname(
-            @RequestParam String name,
+    public ResponseEntity<ApiResponse<?>> searchProducts(
+            @RequestParam String keyword,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
+
         try {
             Pageable pageable = PageRequest.of(page, size);
-            Page<ProductDTO> dtoPage = productService.searchProductsByName(name, pageable);
+            Page<ProductDTO> dtoPage = productService.searchProducts(keyword, pageable);
 
-            if (dtoPage.isEmpty()) {
-                return ResponseEntity.ok(ApiResponse.ok("Không tìm thấy sản phẩm nào phù hợp", dtoPage));
-            }
-
-            return ResponseEntity.ok(ApiResponse.ok("Tìm kiếm sản phẩm thành công", dtoPage));
+            String message = dtoPage.isEmpty() ?
+                    "Không tìm thấy sản phẩm nào phù hợp" :
+                    "Tìm kiếm sản phẩm thành công";
+            return ResponseEntity.ok(ApiResponse.ok(message, dtoPage));
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.internalServerError()
                     .body(ApiResponse.fail("Lỗi khi tìm kiếm sản phẩm"));
         }
     }
-    /*@GetMapping("/featured")
-    public ResponseEntity<ApiResponse<?>> getFeaturedProducts(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        try {
-            Pageable pageable = PageRequest.of(page, size);
-            Page<ProductDTO> featuredProducts = productService.getFeaturedProducts(pageable);
-            return ResponseEntity.ok(ApiResponse.ok("Lấy sản phẩm nổi bật thành công", featuredProducts));
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.internalServerError()
-                    .body(ApiResponse.fail("Lỗi khi lấy sản phẩm nổi bật"));
-        }
-    }*/
 }

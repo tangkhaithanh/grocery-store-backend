@@ -21,7 +21,5 @@ public interface IProductService {
     // Lấy sản phẩm bán chạy nhất trong vòng 7 ngày:
     Page<ProductDTO>getBestSellersLast7Days(Pageable pageable);
 
-    Page<ProductDTO> searchProductsByName(String name, Pageable pageable);
-
-   //Page<ProductDTO> getFeaturedProducts(Pageable pageable);
+    Page<ProductDTO> searchProducts(String keyword, Pageable pageable);
 }

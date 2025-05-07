@@ -42,19 +42,15 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 """)
     Page<Product> findBestSellingLast7Days(@Param("startDate") LocalDateTime startDate, Pageable pageable);
     // Chức năng search:
-    Page<Product> findByNameContainingIgnoreCase(String name, Pageable pageable);
 
-   /* // Lay san pham noi bat:
-    @Query("SELECT p, " +
-            "COUNT(DISTINCT o.id) as orderCount, " +
-            "COUNT(DISTINCT r.id) as reviewCount, " +
-            "COUNT(DISTINCT f.id) as favoriteCount " +
-            "FROM Product p " +
-            "LEFT JOIN p.orderItems o " +
-            "LEFT JOIN p.reviews r " +
-            "LEFT JOIN p.favouriteProducts f " +
-            "WHERE p.status = 'ACTIVE' AND p.quantity > 0 " +
-            "GROUP BY p.id " +
-            "ORDER BY (orderCount + reviewCount + favoriteCount) DESC")
-    Page<Product> findFeaturedProducts(Pageable pageable);*/
+    @Query("""
+        SELECT p FROM Product p
+        WHERE LOWER(p.name) LIKE LOWER(CONCAT('%', :kw, '%'))
+           OR LOWER(p.category.name) LIKE LOWER(CONCAT('%', :kw, '%'))
+        ORDER BY CASE
+                   WHEN LOWER(p.name) LIKE LOWER(CONCAT('%', :kw, '%')) THEN 0
+                   ELSE 1
+                 END
+    """)
+    Page<Product> searchByNameOrCategory(@Param("kw") String keyword, Pageable pageable);
 }
