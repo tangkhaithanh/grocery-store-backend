@@ -77,14 +77,9 @@ public class ProductServiceImpl implements IProductService {
     }
 
     @Override
-    public Page<ProductDTO> searchProductsByName(String name, Pageable pageable) {
-        Page<Product> productPage= productRepository.findByNameContainingIgnoreCase(name, pageable);
-        return productPage.map(productMapper::toDTO);
+    public Page<ProductDTO> searchProducts(String keyword, Pageable pageable) {
+        return productRepository
+                .searchByNameOrCategory(keyword, pageable)
+                .map(productMapper::toDTO);
     }
-
-    /*@Override
-    public Page<ProductDTO> getFeaturedProducts(Pageable pageable) {
-      *//*  Page<Product> productPage=productRepository.findFeaturedProducts(pageable);
-        return productPage.map(productMapper::toDTO);*//*
-    }*/
 }
