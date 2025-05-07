@@ -38,8 +38,10 @@ public class OrderItem {
 
     @ManyToOne
     @JoinColumn(name = "flash_sale_item_id")
+    @JsonBackReference
     private FlashSaleItem flashSaleItem;
 
     @OneToOne(mappedBy = "orderItem", cascade = CascadeType.ALL)
+    @JsonBackReference
     private Review review;
 }
