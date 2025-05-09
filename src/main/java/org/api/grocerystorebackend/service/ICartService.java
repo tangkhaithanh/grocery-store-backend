@@ -8,7 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface ICartService {
-    Page<CartDTO> getCarts(Pageable pageable, Long userId);
+    CartDTO getCarts(Long userId);
     void addOrUpdateToCart(CartItemDTO cartItem, Long userId);
 
     void removeToCart(Long cartItemId, Long userId);
