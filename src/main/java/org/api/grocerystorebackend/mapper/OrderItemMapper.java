@@ -25,7 +25,9 @@ public class OrderItemMapper {
                 orderItem.getQuantity(),
                 orderItem.getPrice(),
                 productMapper.toDTO(orderItem.getProduct()),
+                orderItem.getReview() != null,
                 canReview
+
         );
     }
 

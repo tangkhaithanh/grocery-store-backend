@@ -1,4 +1,4 @@
-package org.api.grocerystorebackend.controller;
+	package org.api.grocerystorebackend.controller;
 
 import jakarta.persistence.EntityNotFoundException;
 import org.api.grocerystorebackend.dto.request.CartItemRequest;
@@ -41,9 +41,8 @@ public class CartController {
                                                       @AuthenticationPrincipal AccountDetails accountDetails) {
         try {
             Long userId = accountDetails.getAccount().getUser().getId();
-            Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
-            Page<CartDTO> listCarts = cartService.getCarts(pageable, userId);
-            return ResponseEntity.ok(ApiResponse.ok("Lấy tất cả sản phẩm trong giỏ hàng thành công", listCarts));
+            CartDTO cart = cartService.getCarts(userId);
+            return ResponseEntity.ok(ApiResponse.ok("Lấy tất cả sản phẩm trong giỏ hàng thành công", cart));
         }
         catch(Exception e) {
             e.printStackTrace();

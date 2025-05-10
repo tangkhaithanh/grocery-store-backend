@@ -50,9 +50,9 @@ public class CartServiceImpl implements ICartService {
     CartMapper cartMapper;
 
     @Override
-    public Page<CartDTO> getCarts(Pageable pageable, Long userId) {
-        Page<Cart> listCarts = cartRepository.findAllByUserId(pageable, userId);
-        return listCarts.map(cartMapper::mapToDTO);
+    public CartDTO getCarts(Long userId) {
+        Cart cart = cartRepository.findByUserId(userId);
+        return cartMapper.mapToDTO(cart);
     }
 
     @Transactional

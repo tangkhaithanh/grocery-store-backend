@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
@@ -53,4 +54,20 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
                  END
     """)
     Page<Product> searchByNameOrCategory(@Param("kw") String keyword, Pageable pageable);
+
+    @Query("""
+    SELECT p FROM Product p
+    WHERE SIZE(p.favouriteProducts) > 0
+      AND (p.quantity - COALESCE((
+            SELECT SUM(oi.quantity) FROM OrderItem oi WHERE oi.product = p
+      ), 0)) > 1
+      AND (
+            SELECT AVG(r.rating)
+            FROM Review r
+            WHERE r.orderItem.product = p
+      ) > 1.0
+    """)
+    List<Product> findFeatureProductsForFlashSale(Pageable pageable);
+
+
 }

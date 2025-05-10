@@ -5,15 +5,16 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.util.List;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class OrderItemDTO {
+public class FlashSaleItemDTO {
     private Long id;
-    private int quantity;
-    private BigDecimal price;
+    private BigDecimal flashSalePrice;
+    private Integer stockQuantity;
+    private Integer soldQuantity;
+    private Integer maxPerCustomer;
+
     private ProductDTO product;
-    private boolean isReviewed;
-    private boolean canReview;
 }
