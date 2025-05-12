@@ -14,5 +14,5 @@ public class CartItemDTO {
     private Long flashSaleId;
     private int quantity;
     private BigDecimal price;
-    private ProductSimpleDTO product;
+    private ProductDTO product;
 }

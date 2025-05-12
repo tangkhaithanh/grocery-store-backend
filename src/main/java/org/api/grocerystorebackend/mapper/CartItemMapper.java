@@ -15,7 +15,7 @@ public class CartItemMapper {
                 cartItem.getFlashSaleItem()==null ? null : cartItem.getFlashSaleItem().getId(),
                 cartItem.getQuantity(),
                 cartItem.getPrice(),
-                productMapper.toSimpleDTO(cartItem.getProduct())
+                productMapper.toDTO(cartItem.getProduct())
         );
     }
 }

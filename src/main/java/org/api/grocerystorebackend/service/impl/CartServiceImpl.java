@@ -2,6 +2,7 @@ package org.api.grocerystorebackend.service.impl;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import org.api.grocerystorebackend.dto.request.CartItemRequest;
 import org.api.grocerystorebackend.dto.response.CartDTO;
 import org.api.grocerystorebackend.dto.response.CartItemDTO;
 import org.api.grocerystorebackend.dto.response.ProductSimpleDTO;
@@ -52,12 +53,15 @@ public class CartServiceImpl implements ICartService {
     @Override
     public CartDTO getCarts(Long userId) {
         Cart cart = cartRepository.findByUserId(userId);
-        return cartMapper.mapToDTO(cart);
+        if(cart != null) {
+            return cartMapper.mapToDTO(cart);
+        }
+        return null;
     }
 
     @Transactional
     @Override
-    public void addOrUpdateToCart(CartItemDTO cartItem, Long userId) {
+    public void addOrUpdateToCart(CartItemRequest cartItem, Long userId) {
         boolean isOutOfStock = false; //dùng để check số lượng muốn mua > số lượng tồn kho của FL
         //1. Kiểm tra user đã có giỏ hàng hay chưa? Tạo hoặc cập nhật nếu đã có
         Cart cart = cartRepository.findById(userId)
