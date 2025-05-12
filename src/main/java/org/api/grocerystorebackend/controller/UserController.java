@@ -1,6 +1,7 @@
 package org.api.grocerystorebackend.controller;
 
 import jakarta.persistence.EntityNotFoundException;
+import org.api.grocerystorebackend.dto.request.UpdateUserRequest;
 import org.api.grocerystorebackend.dto.response.ApiResponse;
 import org.api.grocerystorebackend.dto.response.UserDTO;
 import org.api.grocerystorebackend.entity.User;
@@ -19,11 +20,12 @@ public class UserController {
     @PutMapping("/update/{id}")
     public ResponseEntity<ApiResponse<?>> updateUser(
             @PathVariable Long id,
-            @RequestBody User updatedUser) {
+            @RequestBody UpdateUserRequest updatedUser) {
 
         try {
-            User user = userService.updateUser(id, updatedUser);
-            return ResponseEntity.ok(ApiResponse.ok("Cập nhật người dùng thành công", user));
+            // Fix: Return DTO instead of Entity to avoid circular reference
+            UserDTO userDTO = userService.updateUser(id, updatedUser);
+            return ResponseEntity.ok(ApiResponse.ok("Cập nhật người dùng thành công", userDTO));
 
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(404).body(ApiResponse.fail(e.getMessage()));

@@ -45,7 +45,8 @@ public class AuthController {
                     refreshToken,
                     account.getUser().getFullName(),
                     account.getEmail(),
-                    account.getUser().getImageUrl()
+                    account.getUser().getImageUrl(),
+                    account.getUser().getId()
             );
             return ResponseEntity.ok(ApiResponse.ok("Đăng nhập thành công", authResponse));
         } catch (Exception e) {
