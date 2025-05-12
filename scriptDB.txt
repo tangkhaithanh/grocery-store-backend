@@ -1,0 +1,3 @@
+CREATE database grocery default character set utf8;
+CREATE user 'grocery_user'@'%' identified by 'grocery@123';
+GRANT ALL PRIVILEGES ON grocery.* TO 'grocery_user'@'%';
