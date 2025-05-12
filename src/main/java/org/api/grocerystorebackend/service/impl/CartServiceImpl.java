@@ -64,13 +64,13 @@ public class CartServiceImpl implements ICartService {
     public void addOrUpdateToCart(CartItemRequest cartItem, Long userId) {
         boolean isOutOfStock = false; //dùng để check số lượng muốn mua > số lượng tồn kho của FL
         //1. Kiểm tra user đã có giỏ hàng hay chưa? Tạo hoặc cập nhật nếu đã có
-        Cart cart = cartRepository.findById(userId)
-                .orElseGet(() -> {
-                    Cart newCart = new Cart();
-                    newCart.setUser(userRepository.findById(userId).get());
-                    newCart.setCreatedAt(LocalDateTime.now());
-                    return cartRepository.save(newCart);
-                });
+        Cart cart = cartRepository.findByUserId(userId);
+        if(cart == null) {
+            Cart newCart = new Cart();
+            newCart.setUser(userRepository.findById(userId).get());
+            newCart.setCreatedAt(LocalDateTime.now());
+            cart = cartRepository.save(newCart);
+        }
 
         //2. Kiểm tra sản phẩm có nằm trong chương trình FL? Nếu có lấy min(maxPerCustomer,n) với giá FL, còn lại thì lấy với giá gốc.
         Optional<FlashSaleItem> productInFlashSale = flashSaleService.findProductInFlashSale(cartItem.getProduct().getId());
