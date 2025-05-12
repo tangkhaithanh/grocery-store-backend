@@ -20,11 +20,26 @@ public class UserServiceImpl implements IUserService {
     @Autowired
     private UserRepository userRepository;
 
+
+
+
     @Autowired
     private UserMapper userMapper;
 
+
     @Override
     @Transactional
+    @Override
+    public User updateUser(Long id, User updatedUser) {
+        return userRepository.findById(id)
+                .map(u->{
+                    u.setFullName(updatedUser.getFullName());
+                    u.setPhone(updatedUser.getPhone());
+                    u.setGender(updatedUser.getGender());
+                    u.setImageUrl(updatedUser.getImageUrl());
+                    u.setUpdatedAt(updatedUser.getUpdatedAt());
+                    return u;
+                })
     public UserDTO updateUser(Long id, UpdateUserRequest request) {
         // Find user
         User user = userRepository.findById(id)

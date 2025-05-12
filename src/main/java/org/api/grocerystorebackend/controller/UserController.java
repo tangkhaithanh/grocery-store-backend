@@ -20,11 +20,15 @@ public class UserController {
     @PutMapping("/update/{id}")
     public ResponseEntity<ApiResponse<?>> updateUser(
             @PathVariable Long id,
+            @RequestBody User updatedUser) {
             @RequestBody UpdateUserRequest updatedUser) {
 
         try {
-            UserDTO user = userService.updateUser(id, updatedUser);
+            User user = userService.updateUser(id, updatedUser);
             return ResponseEntity.ok(ApiResponse.ok("Cập nhật người dùng thành công", user));
+            // Fix: Return DTO instead of Entity to avoid circular reference
+            UserDTO userDTO = userService.updateUser(id, updatedUser);
+            return ResponseEntity.ok(ApiResponse.ok("Cập nhật người dùng thành công", userDTO));
 
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(404).body(ApiResponse.fail(e.getMessage()));
