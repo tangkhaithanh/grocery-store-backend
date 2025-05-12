@@ -52,7 +52,10 @@ public class CartServiceImpl implements ICartService {
     @Override
     public CartDTO getCarts(Long userId) {
         Cart cart = cartRepository.findByUserId(userId);
-        return cartMapper.mapToDTO(cart);
+        if(cart != null) {
+            return cartMapper.mapToDTO(cart);
+        }
+        return null;
     }
 
     @Transactional
