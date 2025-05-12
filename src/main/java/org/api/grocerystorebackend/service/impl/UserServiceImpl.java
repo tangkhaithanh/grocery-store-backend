@@ -2,9 +2,11 @@ package org.api.grocerystorebackend.service.impl;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import org.api.grocerystorebackend.dto.request.UpdateUserRequest;
 import org.api.grocerystorebackend.dto.response.UserDTO;
 import org.api.grocerystorebackend.entity.Account;
 import org.api.grocerystorebackend.entity.User;
+import org.api.grocerystorebackend.mapper.UserMapper;
 import org.api.grocerystorebackend.repository.UserRepository;
 import org.api.grocerystorebackend.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,20 +20,29 @@ public class UserServiceImpl implements IUserService {
     @Autowired
     private UserRepository userRepository;
 
-    @Transactional
+    @Autowired
+    private UserMapper userMapper;
+
     @Override
-    public User updateUser(Long id, User updatedUser) {
-        return userRepository.findById(id)
-                .map(u->{
-                    u.setFullName(updatedUser.getFullName());
-                    u.setPhone(updatedUser.getPhone());
-                    u.setGender(updatedUser.getGender());
-                    u.setImageUrl(updatedUser.getImageUrl());
-                    u.setUpdatedAt(updatedUser.getUpdatedAt());
-                    return u;
-                })
+    @Transactional
+    public UserDTO updateUser(Long id, UpdateUserRequest request) {
+        // Find user
+        User user = userRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(
                         "Không tìm thấy người dùng với ID = " + id));
+
+        // Update fields
+        user.setFullName(request.getFullName());
+        user.setPhone(request.getPhone());
+        user.setGender(request.getGender());
+        user.setImageUrl(request.getImageUrl());
+        user.setUpdatedAt(LocalDateTime.now());
+
+        // Save changes to database
+        User savedUser = userRepository.save(user);
+
+        // Convert to DTO using mapper
+        return userMapper.toDTO(savedUser);
     }
 
     @Transactional
