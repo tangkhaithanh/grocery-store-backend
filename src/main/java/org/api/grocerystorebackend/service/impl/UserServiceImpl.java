@@ -1,7 +1,72 @@
 package org.api.grocerystorebackend.service.impl;
 
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
+import org.api.grocerystorebackend.dto.response.UserDTO;
+import org.api.grocerystorebackend.entity.Account;
+import org.api.grocerystorebackend.entity.User;
+import org.api.grocerystorebackend.repository.UserRepository;
 import org.api.grocerystorebackend.service.IUserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+
+@Service
 public class UserServiceImpl implements IUserService {
 
+    @Autowired
+    private UserRepository userRepository;
+
+    @Transactional
+    @Override
+    public User updateUser(Long id, User updatedUser) {
+        return userRepository.findById(id)
+                .map(u->{
+                    u.setFullName(updatedUser.getFullName());
+                    u.setPhone(updatedUser.getPhone());
+                    u.setGender(updatedUser.getGender());
+                    u.setImageUrl(updatedUser.getImageUrl());
+                    u.setUpdatedAt(updatedUser.getUpdatedAt());
+                    return u;
+                })
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Không tìm thấy người dùng với ID = " + id));
+    }
+
+    @Transactional
+    @Override
+    public void softDeleteUser(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Không tìm thấy người dùng với ID = " + id));
+        // Vô hiệu hóa tài khoảng của người dùng
+        Account account = user.getAccount();
+        if (account != null && Boolean.TRUE.equals(account.getIsActive())) {
+            account.setIsActive(false);
+            account.setUpdatedAt(LocalDateTime.now());
+        }
+
+        // Xóa cứng mọi quan hệ phụ thuộc trừ dữ kiện về đơn hàng:
+        if (user.getAddresses()          != null) user.getAddresses().clear();
+        if (user.getReviews()            != null) user.getReviews().clear();
+        if (user.getFavouriteProducts()  != null) user.getFavouriteProducts().clear();
+        if (user.getUserVouchers()       != null) user.getUserVouchers().clear();
+        if (user.getUserScores()         != null) user.getUserScores().clear();
+        user.setCart(null);
+    }
+
+    @Override
+    public UserDTO getUserById(Long id) {
+        User u =userRepository.findByIdAndAccount_IsActiveTrue(id)
+                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy user " + id));
+        return new UserDTO(
+                u.getId(),
+                u.getFullName(),
+                u.getAccount().getEmail(),
+                u.getPhone(),
+                u.getGender(),
+                u.getImageUrl()
+        );
+    }
 }
