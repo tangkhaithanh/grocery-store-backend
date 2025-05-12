@@ -52,7 +52,7 @@ public class CartController {
     }
 
     @PostMapping("/addToCart")
-    public ResponseEntity<ApiResponse<?>> addToCart(@RequestBody CartItemDTO request, @AuthenticationPrincipal AccountDetails accountDetails) {
+    public ResponseEntity<ApiResponse<?>> addToCart(@RequestBody CartItemRequest request, @AuthenticationPrincipal AccountDetails accountDetails) {
         try {
             Long userId = accountDetails.getAccount().getUser().getId();
 
