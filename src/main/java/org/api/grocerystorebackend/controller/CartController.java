@@ -56,7 +56,7 @@ public class CartController {
         try {
             Long userId = accountDetails.getAccount().getUser().getId();
 
-            cartService.addOrUpdateToCart(request, userId);
+            cartService.addToCart(request, userId);
             return ResponseEntity.ok(ApiResponse.ok("Thêm sản phẩm vào giỏ hàng thành công", null));
         }
         catch (Exception e) {
@@ -86,6 +86,20 @@ public class CartController {
             e.printStackTrace();
             return ResponseEntity.internalServerError()
                     .body(ApiResponse.fail("Lỗi khi xóa sản phẩm khỏi giỏ hàng"));
+        }
+    }
+    @PostMapping("/updateToCart")
+    public ResponseEntity<ApiResponse<?>> updateToCart(@RequestBody CartItemRequest request, @AuthenticationPrincipal AccountDetails accountDetails) {
+        try {
+            Long userId = accountDetails.getAccount().getUser().getId();
+
+            cartService.updateToCart(request, userId);
+            return ResponseEntity.ok(ApiResponse.ok("Cập nhật số lượng sản phẩm vào giỏ hàng thành công", null));
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError()
+                    .body(ApiResponse.fail("Lỗi khi Cập nhật số lượng sản phẩm vào giỏ hàng"));
         }
     }
 }

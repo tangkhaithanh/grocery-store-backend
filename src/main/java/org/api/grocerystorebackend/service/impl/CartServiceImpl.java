@@ -61,7 +61,7 @@ public class CartServiceImpl implements ICartService {
 
     @Transactional
     @Override
-    public void addOrUpdateToCart(CartItemRequest cartItem, Long userId) {
+    public void addToCart(CartItemRequest cartItem, Long userId) {
         boolean isOutOfStock = false; //dùng để check số lượng muốn mua > số lượng tồn kho của FL
         //1. Kiểm tra user đã có giỏ hàng hay chưa? Tạo hoặc cập nhật nếu đã có
         Cart cart = cartRepository.findByUserId(userId);
@@ -128,4 +128,30 @@ public class CartServiceImpl implements ICartService {
         }
         cartItemRepository.deleteById(cartItemId);
     }
+
+    @Override
+    public void updateToCart(CartItemRequest cartItem, Long userId) {
+        Cart cart = cartRepository.findByUserId(userId);
+        if(cart == null) {
+            Cart newCart = new Cart();
+            newCart.setUser(userRepository.findById(userId).get());
+            newCart.setCreatedAt(LocalDateTime.now());
+            cart = cartRepository.save(newCart);
+        }
+        Optional<CartItem> oldCartItem = cartItemRepository.findByProductIdWithNotFL(cartItem.getProduct().getId(), cart.getId());
+        if(oldCartItem.isPresent()) {
+            oldCartItem.get().setQuantity(cartItem.getQuantity());
+            cartItemRepository.save(oldCartItem.get());
+        }
+        else {
+            CartItem newCartItem = new CartItem();
+            newCartItem.setCart(cart);
+            newCartItem.setProduct(productRepository.findById(cartItem.getProduct().getId()).get());
+            newCartItem.setQuantity(cartItem.getQuantity());
+            newCartItem.setPrice(cartItem.getPrice());
+            cartItemRepository.save(newCartItem);
+        }
+    }
+
+
 }

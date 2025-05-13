@@ -10,7 +10,8 @@ import org.springframework.data.domain.Pageable;
 
 public interface ICartService {
     CartDTO getCarts(Long userId);
-    void addOrUpdateToCart(CartItemRequest cartItem, Long userId);
+    void addToCart(CartItemRequest cartItem, Long userId);
 
     void removeToCart(Long cartItemId, Long userId);
+    void updateToCart(CartItemRequest cartItem, Long userId);
 }
