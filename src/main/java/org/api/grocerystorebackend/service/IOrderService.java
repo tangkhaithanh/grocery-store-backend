@@ -14,5 +14,5 @@ public interface IOrderService {
     Page<OrderDTO> getAllOrdersByStatusAndIDUser(Pageable pageable, StatusOrderType status, Long id);
 
     Boolean cancelOrder(Long userID, long orderID);
-
+    OrderDTO findById(Long id);
 }

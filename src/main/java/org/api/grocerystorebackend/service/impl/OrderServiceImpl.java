@@ -71,4 +71,13 @@ public class OrderServiceImpl implements IOrderService {
         return true;
     }
 
+    @Override
+    public OrderDTO findById(Long id) {
+        Order order = orderRepository.findById(id).orElse(null);
+        if (order != null) {
+            return orderMapper.toDTO(order);
+        }
+        return null;
+    }
+
 }

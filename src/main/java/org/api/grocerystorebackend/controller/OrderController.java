@@ -62,5 +62,15 @@ public class OrderController {
             return ResponseEntity.status(500).body(ApiResponse.fail("Lỗi hệ thống khi thực hiện chức năng hủy đơn hàng!!!"));
         }
     }
-
+    @GetMapping("/order")
+    public ResponseEntity<ApiResponse<?>> getOrderById(@RequestParam(name="orderId", required = true) Long orderId) {
+        try {
+            OrderDTO order = orderService.findById(orderId);
+            return ResponseEntity.ok(ApiResponse.ok("Lấy đơn hàng của người dùng thành công", order));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(ApiResponse.fail("Dữ liệu trạng thái không hợp lệ"));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(ApiResponse.fail("Lỗi hệ thống khi thực hiện chức năng lấy đơn hàng của người dùng!!!!"));
+        }
+    }
 }
