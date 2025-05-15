@@ -143,14 +143,6 @@ public class CartServiceImpl implements ICartService {
             oldCartItem.get().setQuantity(cartItem.getQuantity());
             cartItemRepository.save(oldCartItem.get());
         }
-        else {
-            CartItem newCartItem = new CartItem();
-            newCartItem.setCart(cart);
-            newCartItem.setProduct(productRepository.findById(cartItem.getProduct().getId()).get());
-            newCartItem.setQuantity(cartItem.getQuantity());
-            newCartItem.setPrice(cartItem.getPrice());
-            cartItemRepository.save(newCartItem);
-        }
     }
 
 
