@@ -20,10 +20,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -53,6 +50,8 @@ public class OrderServiceImpl implements IOrderService {
 
     @Autowired
     private AddressMapper addressMapper;
+    @Autowired
+    private CartItemRepository cartItemRepository;
 
     @Override
     public Page<OrderDTO> getAllOrdersByStatusAndIDUser(Pageable pageable, StatusOrderType status, Long id) {
@@ -118,31 +117,27 @@ public class OrderServiceImpl implements IOrderService {
             // 3. Validate Voucher
             Voucher voucher = validateVoucher(request.getVoucherId());
 
-            // 4. Tạo order entity
+            // 4. Tạo order entity (chưa save vội)
             Order order = createOrderEntity(user, voucher, address, request.getPaymentMethod());
 
-            // 5. Lưu Order trước để lấy ID
-            order = orderRepository.save(order);
-
-            // 6. Tạo và validate order items
+            // 5. Tạo và validate order items (flash sale, giá, tồn kho,…)
             OrderItemsResult orderItemsResult = validateAndCreateOrderItems(order, request.getOrderItems());
             order.setOrderItems(orderItemsResult.getOrderItems());
 
-            // 7. Tính toán final total
+            // 6. Tính tổng tiền cuối cùng
             BigDecimal finalTotal = calculateFinalTotal(orderItemsResult.getCalculatedTotal(), voucher);
-
-            // 8. Validate và set total amount (nếu cần thiết - có thể bỏ)
-            //validateTotalAmount(finalTotal, request.getTotalAmount());
             order.setTotalAmount(finalTotal);
-            orderRepository.save(order);
 
-            // 9. Update stock và voucher quantity
+            // 7. Chỉ save 1 lần duy nhất sau khi hoàn thiện Order
+            order = orderRepository.save(order);
+
+            // 8. Update tồn kho flash-sale, cập nhật voucher (nếu có)
             updateStockAndVoucher(request.getOrderItems(), voucher);
 
-            // 10. Clear cart items
+            // 9. Clear giỏ hàng
             clearCartAfterOrder(userId, request.getOrderItems());
 
-            // 11. Build và return response
+            // 10. Trả về phản hồi
             return buildOrderResponse(order);
 
         } catch (EntityNotFoundException e) {
@@ -274,12 +269,12 @@ public class OrderServiceImpl implements IOrderService {
             throw new RuntimeException("Vượt quá số lượng tối đa cho phép mua của sản phẩm flash sale: " + product.getName());
         }
 
-        // Validate flash sale price
-        if (itemRequest.getPrice().compareTo(flashSaleItem.getFlashSalePrice()) != 0) {
-            throw new RuntimeException("Giá flash sale không khớp cho sản phẩm: " + product.getName());
-        }
 
         orderItem.setFlashSaleItem(flashSaleItem);
+        if (flashSaleItem.getOrderItems() == null) {
+            flashSaleItem.setOrderItems(new ArrayList<>());
+        }
+        flashSaleItem.getOrderItems().add(orderItem);
     }
 
     // Method 9: Validate regular product
@@ -287,11 +282,6 @@ public class OrderServiceImpl implements IOrderService {
         // Validate regular product stock
         if (product.getQuantity() < itemRequest.getQuantity()) {
             throw new RuntimeException("Không đủ hàng trong kho cho sản phẩm: " + product.getName());
-        }
-
-        // Validate product price
-        if (itemRequest.getPrice().compareTo(product.getPrice()) != 0) {
-            throw new RuntimeException("Giá sản phẩm không khớp cho: " + product.getName());
         }
     }
 
@@ -404,15 +394,66 @@ public class OrderServiceImpl implements IOrderService {
         }
     }
 
-    // Hàm để xóa các sản phẩm trong cart sau khi đặt hàng:
-    private void clearCartAfterOrder(Long userId, List<OrderItemRequest> orderItems) {
-        // Clear specific items that were ordered
-        for (OrderItemRequest item : orderItems) {
-            cartRepository.deleteByUserIdAndProductIdAndFlashSaleItemId(
-                    userId,
-                    item.getProductId(),
-                    item.getFlashSaleItemId()
-            );
+    @Transactional
+    protected void clearCartAfterOrder(Long userId, List<OrderItemRequest> orderItems) {
+        // Lấy cart của user
+
+
+        System.out.println("=== DEBUG clearCartAfterOrder ===");
+        System.out.println("UserId: " + userId);
+
+        for (OrderItemRequest item1 : orderItems) {
+            System.out.println("OrderItem details:");
+            System.out.println("  - ProductId: " + item1.getProductId());
+            System.out.println("  - FlashSaleItemId: " + item1.getFlashSaleItemId());
+            System.out.println("  - Quantity: " + item1.getQuantity());
+            System.out.println("  - Price: " + item1.getPrice());
+
+            if (item1.getFlashSaleItemId() != null) {
+                System.out.println("  -> Treating as FLASH SALE item");
+            } else {
+                System.out.println("  -> Treating as REGULAR item");
+            }
+            Cart userCart = cartRepository.findByUserId(userId);
+            if (userCart == null) {
+                System.out.println("No cart found for user: " + userId);
+                return;
+            }
+
+            System.out.println("Found cart with ID: " + userCart.getId() + " for user: " + userId);
+
+            for (OrderItemRequest item : orderItems) {
+                List<CartItem> cartItemsToDelete = new ArrayList<>();
+
+                if (item.getFlashSaleItemId() != null) {
+                    // Flash sale item - tìm theo cả product ID và flash sale item ID
+                    Optional<CartItem> cartItem = cartItemRepository.findByProductIdAndFlashSaleItemId(
+                            item.getProductId(),
+                            item.getFlashSaleItemId(),
+                            userCart.getId()
+                    );
+                    cartItem.ifPresent(cartItemsToDelete::add);
+                    System.out.println("Flash sale item - Product: " + item.getProductId() +
+                            ", FlashSaleId: " + item.getFlashSaleItemId() +
+                            ", Found: " + cartItem.isPresent());
+                } else {
+                    // Regular item
+                    Optional<CartItem> cartItem = cartItemRepository.findByProductIdWithNotFL(
+                            item.getProductId(), userCart.getId()
+                    );
+                    cartItem.ifPresent(cartItemsToDelete::add);
+                    System.out.println("Regular item - Product: " + item.getProductId() +
+                            ", Found: " + cartItem.isPresent());
+                }
+
+                // Delete found items
+                if (!cartItemsToDelete.isEmpty()) {
+                    cartItemRepository.deleteAll(cartItemsToDelete);
+                    System.out.println("Deleted " + cartItemsToDelete.size() + " cart items for product: " + item.getProductId());
+                } else {
+                    System.out.println("No cart items found to delete for product: " + item.getProductId());
+                }
+            }
         }
     }
 }
