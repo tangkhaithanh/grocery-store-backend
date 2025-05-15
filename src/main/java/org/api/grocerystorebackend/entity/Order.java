@@ -47,6 +47,21 @@ public class Order {
 
     @Column(name = "payment_method", columnDefinition = "varchar(50)")
     private String paymentMethod;
+    // Thông tin địa chỉ giao hàng (snapshot)
+    @Column(name = "shipping_user_name", columnDefinition = "varchar(255)")
+    private String shippingUserName;
+
+    @Column(name = "shipping_phone_number", columnDefinition = "varchar(20)")
+    private String shippingPhoneNumber;
+
+    @Column(name = "shipping_city", columnDefinition = "varchar(200)")
+    private String shippingCity;
+
+    @Column(name = "shipping_district", columnDefinition = "varchar(200)")
+    private String shippingDistrict;
+
+    @Column(name = "shipping_street_address", columnDefinition = "varchar(255)")
+    private String shippingStreetAddress;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;

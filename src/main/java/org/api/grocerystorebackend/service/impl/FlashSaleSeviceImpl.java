@@ -147,10 +147,6 @@ public class FlashSaleSeviceImpl implements IFlashSaleService {
     public List<FlashSaleDTO> getFlashSaleList() {
         // Lấy tất cả các FlashSale có trạng thái ACTIVE
         List<FlashSale> flashSales = flashSaleRepository.findAllTakingPlace(FlashSaleStatus.ACTIVE);
-        System.out.println("Test");
-        for (FlashSale flashSale : flashSales) {
-            System.out.println(flashSale.getFlashSaleItems().get(2).getId());
-        }
         // Chuyển đổi danh sách FlashSale thành FlashSaleDTO
         return flashSales.stream()
                 .map(flashSaleMapper::toDTO)  // Chuyển từng FlashSale sang DTO
