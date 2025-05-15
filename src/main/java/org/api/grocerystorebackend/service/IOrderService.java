@@ -1,5 +1,7 @@
 package org.api.grocerystorebackend.service;
 
+import org.api.grocerystorebackend.dto.request.CreateOrderRequest;
+import org.api.grocerystorebackend.dto.response.CreateOrderResponse;
 import org.api.grocerystorebackend.dto.response.DeliveredOrderDTO;
 import org.api.grocerystorebackend.dto.response.OrderDTO;
 import org.api.grocerystorebackend.entity.Order;
@@ -15,4 +17,6 @@ public interface IOrderService {
 
     Boolean cancelOrder(Long userID, long orderID);
     OrderDTO findById(Long id);
+
+    CreateOrderResponse createOrder(Long userId, CreateOrderRequest request);
 }

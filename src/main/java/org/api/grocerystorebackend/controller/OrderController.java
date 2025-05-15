@@ -1,7 +1,10 @@
 package org.api.grocerystorebackend.controller;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.api.grocerystorebackend.dto.request.CancelOrderRequest;
+import org.api.grocerystorebackend.dto.request.CreateOrderRequest;
 import org.api.grocerystorebackend.dto.response.ApiResponse;
+import org.api.grocerystorebackend.dto.response.CreateOrderResponse;
 import org.api.grocerystorebackend.dto.response.DeliveredOrderDTO;
 import org.api.grocerystorebackend.dto.response.OrderDTO;
 import org.api.grocerystorebackend.entity.Order;
@@ -71,6 +74,24 @@ public class OrderController {
             return ResponseEntity.badRequest().body(ApiResponse.fail("Dữ liệu trạng thái không hợp lệ"));
         } catch (Exception e) {
             return ResponseEntity.status(500).body(ApiResponse.fail("Lỗi hệ thống khi thực hiện chức năng lấy đơn hàng của người dùng!!!!"));
+        }
+    }
+
+    // Thêm đơn hàng:
+    @PostMapping("/create")
+    public ResponseEntity<ApiResponse<?>> createOrder(
+            @AuthenticationPrincipal AccountDetails accountDetails,
+            @RequestBody CreateOrderRequest request) {
+        try {
+            Long userId = accountDetails.getAccount().getUser().getId();
+            CreateOrderResponse response = orderService.createOrder(userId, request);
+            return ResponseEntity.ok(ApiResponse.ok("Đặt hàng thành công", response));
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(404).body(ApiResponse.fail(e.getMessage()));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(ApiResponse.fail(e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(ApiResponse.fail("Lỗi hệ thống khi tạo đơn hàng"));
         }
     }
 }
