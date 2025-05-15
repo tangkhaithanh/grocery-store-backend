@@ -7,10 +7,7 @@ import org.api.grocerystorebackend.entity.FlashSale;
 import org.api.grocerystorebackend.service.IFlashSaleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -37,6 +34,20 @@ public class FlashSaleController {
         try {
             List<FlashSaleDTO> flashSaleList = flashSaleService.getFlashSaleList();
             return ResponseEntity.ok(ApiResponse.ok("Lấy Flash Sale thành công", flashSaleList));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError()
+                    .body(ApiResponse.fail("Lỗi khi lấy Flash Sale"));
+        }
+    }
+
+    @GetMapping("/fli")
+    public ResponseEntity<ApiResponse<?>> getFlashSale(
+            @RequestParam("flash_sale_item_id") Long id
+    ) {
+        try {
+            FlashSaleDTO flashSale = flashSaleService.getFlashSaleByIdFlashSaleItem(id);
+            return ResponseEntity.ok(ApiResponse.ok("Lấy Flash Sale thành công", flashSale));
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.internalServerError()

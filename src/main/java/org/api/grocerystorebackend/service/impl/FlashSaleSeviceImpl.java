@@ -157,4 +157,17 @@ public class FlashSaleSeviceImpl implements IFlashSaleService {
                 .collect(Collectors.toList());  // Chuyển đổi thành danh sách
     }
 
+    @Override
+    public FlashSaleDTO getFlashSaleByIdFlashSaleItem(Long id) {
+        FlashSaleItem fli = flashSaleItemRepository.findById(id).orElse(null);
+        if(fli != null) {
+            FlashSale fl = flashSaleRepository.findById(fli.getFlashSale().getId()).orElse(null);
+            if(fl != null) {
+                return flashSaleMapper.toDTO(fl);
+            }
+            return null;
+        }
+        return null;
+    }
+
 }

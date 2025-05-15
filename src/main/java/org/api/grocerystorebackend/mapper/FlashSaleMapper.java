@@ -28,7 +28,7 @@ public class FlashSaleMapper {
         dto.setDescription(flashSale.getDescription());
         dto.setStartTime(flashSale.getStartTime());
         dto.setEndTime(flashSale.getEndTime());
-
+        dto.setStatus(flashSale.getStatus());
         dto.setFlashSaleItems(flashSaleItemDTOS);
 
         return dto;

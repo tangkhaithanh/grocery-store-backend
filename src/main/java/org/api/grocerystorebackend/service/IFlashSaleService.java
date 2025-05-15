@@ -16,4 +16,5 @@ public interface IFlashSaleService {
     FlashSaleDTO createProductInFlashSale();
 
     List<FlashSaleDTO> getFlashSaleList();
+    FlashSaleDTO getFlashSaleByIdFlashSaleItem(Long id);
 }
