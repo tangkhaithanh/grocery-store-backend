@@ -1,16 +1,18 @@
 package org.api.grocerystorebackend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
+@ToString(onlyExplicitlyIncluded = true)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Account {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,6 +20,7 @@ public class Account {
 
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="user_id",nullable = false)
+    @JsonIgnore
     private User user;
 
     @Column(name="email", nullable = false,columnDefinition = "varchar(255)")
